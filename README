@@ -1,0 +1,47 @@
+Draghici Maria-Ana, 332CA
+
+    Am salvat numele fisierelor pe o stiva pentru
+a lasa thread-urile sa isi preia fisiere de acolo
+cand termina fisierul curent de citit. Atsfel,
+citirea o sa fie mai eficienta intrucat, fiecare
+thread odata ce isi termina fisierul de citit,
+ia urmatorul fisier.
+Fiecare thread are o structura ce contine tipul
+functiei pe care trebuie sa o apeleze (mapper/reducer),
+numarul de reducer/mapperi, acelasi vector de mapperi,
+exponentul(completat doar pentru reduceri), 
+id-ul, bariera si mutex (aceleasi pentru toti, pentru
+sincronizare) si unordered_map(pentru reduceri,
+pentru salvarea valorilor unice).
+    Mapperi sunt salvati intr-un vector, iar
+fiecare mapper are cate un vector ce reprezinta fiecare
+exponent care fiecare are cate un vector de numere.
+Reducerilor le este asignat cate un exponent de care
+sa se ocupe. Toate datele sunt salvate in structura
+argument aferenta thread-ului.
+    Dupa salvarea fisierelor in stiva, creez
+thread-urile, iar pt fiecare thread este apelata
+functia potrivita (mapper/reducer). Intrucat am folosit
+o bariera intre mapperi si reduceri, reducerii vor 
+prelucra abia dupa terminarea executiei mapperilor.
+Fiecare mapper foloseste mutexul cand isi extrage fisierul
+din stiva si dupa aceea este scos, pt ca alt thread
+sa nu se intercaleze cu el. Prima data dau lock, verific daca
+stiva mai are elemente. Daca nu mai are, dau unlock si se
+iese din bucla. Daca mai sunt elemente, fisierul este
+extras si scos din stiva, se da unlock, iar, apoi, este
+citit de catre thread-ul respectiv. Pentru fiecare numar citit,
+verific pentru fiecare exponent posibil daca numarul
+este putere perfecta. Algoritmul consta intr-un binary
+search, de la 1 la sqrt(numar). Daca se gaseste
+un numar in intervalul acesta care ridicat la exponentul
+curent da numarul cautat, atunci il adaugam in lista
+exponentului de la mapperul la care suntem.
+Dupa popularea listelor mapperilor, reducerii isi incep
+prelucrarea. Astfel, fiecare reducer are un unordered_map.
+Acesta itereaza prin vectorul de mapperi, iar in acestia
+prin vectorul exponentului asignat, iar daca elementul nu exista
+deja in map, il salveaza. Apoi, reducerul scrie in fisierul
+creat size-ul map-ului, adica numarul de elemente unice.
+    Dupa procedeul de join si distrugerea baierei si mutexului,
+programul se sfarseste.
